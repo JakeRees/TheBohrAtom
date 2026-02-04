@@ -5,20 +5,21 @@ using namespace std;
 
 float CalculateTransitionEnergy(float R, int Z, int n1, int n2)
 {
-    // Calculates the transition energy using the rydberg formula
-    return R * pow(Z, 2) * ( (1/pow(n1, 2)) - (1/pow(n2, 2)) );
+  // Calculates the transition energy using the rydberg formula
+  return R * pow(Z, 2) * ( (1/pow(n1, 2)) - (1/pow(n2, 2)) );
 }
 
 int main()
 {
-    float rydbergEnergy = 13.606;
-    int atomicNumber;
-    int initialNumber;
-    int finalNumber;
-    char units;
-    char running = 'y';
+  float rydbergEnergy = 13.606;
+  int atomicNumber;
+  int initialNumber;
+  int finalNumber;
+  char units;
+  char running = 'y';
 
-
+  while (running == 'y')
+  {
     cout << "Enter atomic number: ";
     cin >> atomicNumber;
 
@@ -47,6 +48,12 @@ int main()
       photonEnergy *= 1.6 * pow(10, -19);
       cout << "Emmited Photon Energy: " << photonEnergy << " J" << endl;
     }
+
+    cout << "Would you like to calculate again for different values? (Y/N): ";
+    cin >> running;
+
+    tolower(running);
+  }
 
   return 0;
 }
