@@ -1,57 +1,85 @@
 #include<iostream>
 #include<iomanip>
 #include<cmath>
-using namespace std;
+using std::cout;
+using std::cin;
 
-float CalculateTransitionEnergy(float R, int Z, int n1, int n2)
+const float rydberg_energy = 13.606;
+
+
+float calculate_transition_energy(int atomic_number, int initial_level, int final_level)
 {
   // Calculates the transition energy using the rydberg formula
-  return R * pow(Z, 2) * ( (1/pow(n1, 2)) - (1/pow(n2, 2)) );
+  return (rydberg_energy * pow(atomic_number, 2) *
+   ((1/pow(initial_level, 2)) - (1/pow(final_level, 2))));
 }
+
+
+int get_integer_input(std::string message)
+{
+  // Validates input to ensure positive integer type
+  int input;
+
+  cout << message;
+  while (!(cin >> input) || input < 1) 
+  {
+    cout << "Error: Invalid input, please enter an integer greater than 0: ";
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cout << "\n" << message;
+  }
+
+  return input;
+}
+
+int get_char_input(std::string message)
+{
+  // Validates input to ensure character type
+  char input;
+
+  cout << message;
+  while (!(cin >> input)) 
+  {
+    cout << "Error: Invalid input, please enter a single character ";
+    cin.clear();
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  }
+
+  return input;
+}
+
 
 int main()
 {
-  float rydbergEnergy = 13.606;
-  int atomicNumber;
-  int initialNumber;
-  int finalNumber;
+  int atomic_number;
+  int initial_number;
+  int final_number = -1;
   char units;
   char running = 'y';
 
-  while (running == 'y')
+  while(running == 'y')
   {
-    cout << "Enter atomic number: ";
-    cin >> atomicNumber;
+    atomic_number = get_integer_input("Enter atomic number: ");
+    initial_number = get_integer_input("Enter initial quantum number: ");
+    final_number = get_integer_input("Enter final quantum number: ");
 
-    cout << "Enter initial quantum number: ";
-    cin >> initialNumber;
+    units = get_char_input("Should the answer be given in Joules (type 'j') or Electron Volts (type 'e'): ");
+    tolower(units); 
 
-    cout << "Enter final quantum number: ";
-    cin >> finalNumber;
-
-    cout << "Would you like the answer in Joules (type 'j') or Electron Volts (type 'e'): ";
-    cin >> units;
-    
-    // Ensure answer is in lowercase
-    tolower(units);
-
-    float photonEnergy = CalculateTransitionEnergy(rydbergEnergy, atomicNumber, 
-      initialNumber, finalNumber);
+    float photon_energy = calculate_transition_energy(atomic_number, initial_number, final_number);
 
     // Check which units to output answer in, convert if necessary
-    if (units == 'e')
+    if(units == 'e')
     {
-      cout << "Transition Energy: " << photonEnergy << " eV" << endl;
+      cout << "Transition Energy: " << photon_energy << " eV" << std::endl;
     }
     else
     {
-      photonEnergy *= 1.6 * pow(10, -19);
-      cout << "Emmited Photon Energy: " << photonEnergy << " J" << endl;
+      photon_energy *= 1.6 * pow(10, -19);
+      cout << "Emmited Photon Energy: " << photon_energy << " J" << std::endl;
     }
 
-    cout << "Would you like to calculate again for different values? (Y/N): ";
-    cin >> running;
-
+    running = get_char_input("Would you like to calculate again for different values? (Y/N): ");
     tolower(running);
   }
 
