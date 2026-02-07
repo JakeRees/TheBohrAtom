@@ -1,24 +1,31 @@
+/*
+                              Jake Rees, 11307374
+                           University of Manchester
+
+This program recieves and validates user input, then calculates the transition
+energy between electron shell levels from the given input. 
+*/
+
 #include<iostream>
 #include<iomanip>
 #include<cmath>
-#include <algorithm>
 #include <sstream>
-
 using std::cout;
 using std::cin;
 using std::string;
 
 const float rydberg_energy = 13.606;
 
-float calculate_transition_energy(int atomic_number, int initial_level, int final_level)
+float transition_energy(int atomic_number, int init_level, int final_level)
 {
-  // Calculates the transition energy using the rydberg formula
-  return (rydberg_energy * pow(atomic_number, 2) *
-   ((1/pow(initial_level, 2)) - (1/pow(final_level, 2))));
+  // Calculates difference in energy between levels using the Rydberg formula
+  float level_difference = (1/pow(init_level, 2)) - (1/pow(final_level, 2));
+  return rydberg_energy * pow(atomic_number, 2) * level_difference;
 }
 
-int get_integer_input(const string& message) {
-  // Validates input to ensure positive integer type
+int get_integer_input(const string& message) 
+{
+  // Validates input to ensure entirely positive integer type
   string line;
   int input;
 
@@ -27,14 +34,11 @@ int get_integer_input(const string& message) {
     cout << "\n" << message;
     getline(cin, line);
 
-    std::stringstream ss(line);
-    if (ss >> input && !(ss >> line) && input > 0) 
-    {
-        return input;
-    } else 
-    {
-        cout << "\033[1;31mError: Input must be a positive integer.\033[0m\n";
-    }
+    std::istringstream converter(line);
+    if (converter >> input && converter.eof() && input > 0) 
+      return input;
+    else 
+      cout << "\033[1;31mError: Input must be a positive integer.\033[0m\n";
   }
 }
 
@@ -69,12 +73,14 @@ int main()
     {
       final_number = get_integer_input("Enter final quantum number: ");
       if (final_number <= initial_number)
-        cout << "\033[1;31mError: Final level (n2) must be greater than initial level (n1).\033[0m\n";
+        cout << "\033[1;31mError: Final level (n2) must be"
+             << "greater than initial level (n1).\033[0m\n";
       else 
         break;
     }
 
-    string message = "Should the answer be given in Joules (type 'j') or Electron Volts (type 'e'): ";
+    string message = "Should the answer be given in Joules"
+                     "(type 'j') or Electron Volts (type 'e'): ";
     
     units = get_char_input(message, extra_input);
     // Character input validation
@@ -87,20 +93,20 @@ int main()
       units = get_char_input(message, extra_input);
     }
 
-    float photon_energy = calculate_transition_energy(atomic_number, initial_number, final_number);
+    float trans_energy = transition_energy(atomic_number, initial_number,
+                                           final_number);
 
-    // Check which units to output answer in, convert if necessary
-    if(units == 'e')
+    // Convert units if necessary
+    string output_unit = "eV";
+    if(units == 'j')
     {
-      cout << "Transition Energy: " << photon_energy << " eV" << std::endl;
-    }
-    else
-    {
-      photon_energy *= 1.6 * pow(10, -19);
-      cout << "Emmited Photon Energy: " << photon_energy << " J" << std::endl;
+      output_unit = "j";
+      trans_energy *= 1.6 * pow(10, -19);
     }
 
-    message = "Would you like to calculate again for different values? (Y/N): ";
+    cout << "Transition Energy: " << trans_energy << " " << output_unit << "\n";
+
+    message = "Would you like to recalculate for different values? (Y/N): ";
     
     keep_running = get_char_input(message, extra_input);
     // Character input validation
@@ -108,7 +114,7 @@ int main()
     {
       while (extra_input != '\n' && cin.get(extra_input));
 
-      cout << "\033[1;31mError: Input must be either 'y' or 'n' \033[0m\n";
+      cout << "\033[1;31mError: Input must be either 'Y' or 'N' \033[0m\n";
       keep_running = get_char_input(message, extra_input);
     }
   }
