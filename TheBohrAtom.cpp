@@ -14,18 +14,19 @@ using std::cout;
 using std::cin;
 using std::string;
 
-const float rydberg_energy = 13.606;
+const float rydberg_energy = 13.606f;
+const float electron_volt = 1.602 * pow(10, -19);
 
 float transition_energy(int atomic_number, int init_level, int final_level)
 {
   // Calculates difference in energy between levels using the Rydberg formula
-  float level_difference = (1/pow(init_level, 2)) - (1/pow(final_level, 2));
+  float level_difference = (1/pow(final_level, 2)) - (1/pow(init_level, 2));
   return rydberg_energy * pow(atomic_number, 2) * level_difference;
 }
 
 int get_integer_input(const string& message) 
 {
-  // Validates input to ensure entirely positive integer type
+  // Requests and validates input to ensure strictly positive integer type
   string line;
   int input;
 
@@ -44,7 +45,8 @@ int get_integer_input(const string& message)
 
 char get_char_input(string message, char &extra)
 {
-  // Retrieves a character input and converts to lowercase
+  /* Retrieves a character input and converts to lowercase, 
+  also retrieves second character of input for validation purposes */
   char input;
 
   cout << "\n" << message;
@@ -67,14 +69,14 @@ int main()
   while(keep_running == 'y')
   {
     atomic_number = get_integer_input("Enter atomic number: ");
-    initial_number = get_integer_input("Enter initial quantum number: ");
+    final_number = get_integer_input("Enter final quantum number (n_j): ");
 
     while (true)
     {
-      final_number = get_integer_input("Enter final quantum number: ");
-      if (final_number <= initial_number)
-        cout << "\033[1;31mError: Final level (n2) must be"
-             << "greater than initial level (n1).\033[0m\n";
+      initial_number = get_integer_input("Enter initial quantum number (n_i): ");
+      if (initial_number <= final_number)
+        cout << "\033[1;31mError: Initial level (n_i) must be "
+                "greater than final level (n_j).\033[0m\n";
       else 
         break;
     }
@@ -86,7 +88,7 @@ int main()
     // Character input validation
     while ((units != 'j' && units != 'e') || extra_input != '\n')
     {
-      // Ignore extra letters - only need look at first two
+      // Ignore extra letters - only need to look at first two
       while (extra_input != '\n' && cin.get(extra_input));
 
       cout << "\033[1;31mError: Input must be either 'j' or 'e' \033[0m\n";
@@ -101,7 +103,7 @@ int main()
     if(units == 'j')
     {
       output_unit = "j";
-      trans_energy *= 1.6 * pow(10, -19);
+      trans_energy *= electron_volt;
     }
 
     cout << "Transition Energy: " << trans_energy << " " << output_unit << "\n";
@@ -109,7 +111,6 @@ int main()
     message = "Would you like to recalculate for different values? (Y/N): ";
     
     keep_running = get_char_input(message, extra_input);
-    // Character input validation
     while ((keep_running != 'y' && keep_running != 'n') || extra_input != '\n')
     {
       while (extra_input != '\n' && cin.get(extra_input));

@@ -1,5 +1,5 @@
 main:
-	g++ main.cpp -o TransitionEnergy.exe -std=gnu++17
+	g++ TheBohrAtom.cpp -o TheBohrAtom.exe -std=gnu++17
 
 clean:
 	rm TransitionEnergy.exe
